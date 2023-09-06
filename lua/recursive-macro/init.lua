@@ -40,6 +40,8 @@ function T.startMacro()
             macro = string.sub(macro, 1, #macro - 2)
         elseif vim.endswith(macro, "2") then
             macro = string.sub(macro, 1, #macro - 1)
+        else
+            macro = ""
         end
         T.macros[T.depth - 1] = T.macros[T.depth - 1] .. macro
     end
@@ -65,8 +67,9 @@ function T.endMacro()
     if T.depth == 0 then
         unmap("2q")
         map(T.startMacroKey, T.startMacro)
+        vim.fn.setreg(T.registers[1], T.macros[1])
         map(T.replayMacroKey, function()
-            return T.macros[1]
+            return "@" .. T.registers[1]
         end, true)
         return ""
     else
