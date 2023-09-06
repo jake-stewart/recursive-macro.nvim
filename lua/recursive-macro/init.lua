@@ -8,8 +8,12 @@ local function unmap(mapping)
     end, { expr = true })
 end
 
+local function index(string, i)
+    return string.sub(string, i, i)
+end
+
 local T = {
-    registers = "qwerty",
+    registers = {"q", "w", "e", "r", "t", "y"},
     depth = 0,
     macros = {},
     startMacroKey = "q",
