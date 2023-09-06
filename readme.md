@@ -23,7 +23,6 @@ or for more customisation:
 require("recursive-macros").setup({
     registers = {"q", "w", "e", "r", "t", "y"},
     startMacro = "q",
-    recurseMacro = "2q",
     replayMacro = "Q",
 })
 ```

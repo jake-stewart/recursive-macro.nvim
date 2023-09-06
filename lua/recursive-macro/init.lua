@@ -14,7 +14,6 @@ local T = {
     depth = 0,
     macros = {},
     startMacroKey = "q",
-    recurseMacroKey = "2q",
     replayMacroKey = "Q",
 }
 
@@ -26,16 +25,16 @@ function T.startMacro()
         keys = 'q' .. T.registers[T.depth]
     end
     if T.depth == 0 then
-        T.macros = {""}
+        T.macros = {"", ""}
         map("q", T.endMacro)
         map(T.recurseMacroKey, T.startMacro)
         map(T.replayMacroKey, T.replayMacro)
     else
-        if T.depth < #T.registers then
-            if #T.macros < T.depth + 1 then
+        if T.depth + 1 < #T.registers then
+            if #T.macros < T.depth + 2 then
                 table.insert(T.macros, "")
             else
-                T.macros[T.depth] = ""
+                T.macros[T.depth + 2] = ""
             end
         end
         vim.fn.feedkeys('q', 'nx')
@@ -46,7 +45,7 @@ function T.startMacro()
         elseif vim.endswith(macro, "2") then
             macro = string.sub(macro, 1, #macro - 1)
         end
-        T.macros[T.depth] = macro
+        T.macros[T.depth + 1] = T.macros[T.depth + 1] .. macro
     end
     if T.depth < #T.registers then
         T.depth = T.depth + 1
@@ -57,37 +56,29 @@ end
 function T.replayMacro()
     vim.fn.feedkeys('q', 'nx')
     local macro = vim.fn.getreg(T.registers[T.depth])
-    macro = string.sub(macro, 1, #macro - 1)
-    T.macros[T.depth] = T.macros[T.depth]
-        .. macro .. "@" .. T.registers[T.depth + 1]
-    vim.fn.feedkeys("@" .. T.registers[T.depth + 1], "m")
+    T.macros[T.depth + 1] = T.macros[T.depth + 1]
+        .. macro .. T.macros[T.depth + 2]
+    vim.fn.feedkeys(T.macros[T.depth + 2], "m")
     return "q" .. T.registers[T.depth]
 end
 
 function T.endMacro()
-    if T.depth == 0 then
-        return
-    end
-
     vim.fn.feedkeys('q', 'nx')
-    local keys = ""
+    local macro = vim.fn.getreg(T.registers[T.depth])
+    T.macros[T.depth + 1] = T.macros[T.depth + 1] .. macro
     T.depth = T.depth - 1
-
     T.macros[T.depth + 1] = T.macros[T.depth + 1]
-        .. vim.fn.getreg(T.registers[T.depth + 1])
-    vim.fn.setreg(T.registers[T.depth + 1], T.macros[T.depth + 1])
-
+        .. T.macros[T.depth + 2]
     if T.depth == 0 then
-        vim.cmd.unmap(T.recurseMacroKey)
+        unmap(T.recurseMacroKey)
         map(T.startMacroKey, T.startMacro)
-        map(T.replayMacroKey, "@" .. T.registers[1], true)
+        map(T.replayMacroKey, function()
+            return T.macros[1]
+        end, true)
+        return ""
     else
-        T.macros[T.depth] = T.macros[T.depth]
-            .. "@" .. T.registers[T.depth + 1]
-        keys = keys .. 'q' .. T.registers[T.depth]
+        return 'q' .. T.registers[T.depth]
     end
-
-    return keys
 end
 
 function T.start()
@@ -101,7 +92,6 @@ local function setup(opts)
     opts = opts or {}
     T.registers = opts.registers or T.registers
     T.startMacroKey = opts.startMacro or T.startMacroKey
-    T.recurseMacroKey = opts.recurseMacro or T.recurseMacroKey
     T.replayMacroKey = opts.replayMacro or T.replayMacroKey
     T.start()
 end
