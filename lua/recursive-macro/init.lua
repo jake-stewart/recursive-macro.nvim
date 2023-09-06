@@ -18,37 +18,30 @@ local T = {
 }
 
 function T.startMacro()
-    local keys
-    if T.depth < #T.registers then
-        keys = 'q' .. T.registers[T.depth + 1]
-    else
-        keys = 'q' .. T.registers[T.depth]
-    end
-    if T.depth == 0 then
+    T.depth = T.depth + 1
+    local keys = 'q' .. T.registers[T.depth]
+    if T.depth == 1 then
         T.macros = {"", ""}
         map("q", T.endMacro)
         map("2q", T.startMacro)
         map(T.replayMacroKey, T.replayMacro)
     else
-        if T.depth + 1 < #T.registers then
-            if #T.macros < T.depth + 2 then
+        if T.depth < #T.registers then
+            if #T.macros < T.depth + 1 then
                 table.insert(T.macros, "")
             else
-                T.macros[T.depth + 2] = ""
+                T.macros[T.depth + 1] = ""
             end
         end
         vim.fn.feedkeys('q', 'nx')
-        local macro = vim.fn.getreg(T.registers[T.depth])
+        local macro = vim.fn.getreg(T.registers[T.depth - 1])
 
         if vim.endswith(macro, "2q") then
             macro = string.sub(macro, 1, #macro - 2)
         elseif vim.endswith(macro, "2") then
             macro = string.sub(macro, 1, #macro - 1)
         end
-        T.macros[T.depth + 1] = T.macros[T.depth + 1] .. macro
-    end
-    if T.depth < #T.registers then
-        T.depth = T.depth + 1
+        T.macros[T.depth - 1] = T.macros[T.depth - 1] .. macro
     end
     return keys
 end
