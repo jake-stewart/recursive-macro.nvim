@@ -21,7 +21,7 @@ or for more customisation:
 
 ```lua
 require("recursive-macros").setup({
-    registers = "qwerty",
+    registers = {"q", "w", "e", "r", "t", "y"},
     startMacro = "q",
     recurseMacro = "2q",
     replayMacro = "Q",
