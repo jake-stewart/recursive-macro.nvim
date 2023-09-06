@@ -80,7 +80,7 @@ function T.endMacro()
     if T.depth == 0 then
         vim.cmd.unmap(T.recurseMacroKey)
         map(T.startMacroKey, T.startMacro)
-        map(T.replayMacroKey, "@" .. T.registers[1])
+        map(T.replayMacroKey, "@" .. T.registers[1], true)
     else
         T.macros[T.depth] = T.macros[T.depth]
             .. "@" .. T.registers[T.depth + 1]
