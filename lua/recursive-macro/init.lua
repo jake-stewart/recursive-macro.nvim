@@ -27,7 +27,7 @@ function T.startMacro()
     if T.depth == 0 then
         T.macros = {"", ""}
         map("q", T.endMacro)
-        map(T.recurseMacroKey, T.startMacro)
+        map("2q", T.startMacro)
         map(T.replayMacroKey, T.replayMacro)
     else
         if T.depth + 1 < #T.registers then
@@ -70,7 +70,7 @@ function T.endMacro()
     T.macros[T.depth + 1] = T.macros[T.depth + 1]
         .. T.macros[T.depth + 2]
     if T.depth == 0 then
-        unmap(T.recurseMacroKey)
+        unmap("2q")
         map(T.startMacroKey, T.startMacro)
         map(T.replayMacroKey, function()
             return T.macros[1]
@@ -83,7 +83,7 @@ end
 
 function T.start()
     map(T.startMacroKey, T.startMacro)
-    unmap(T.recurseMacroKey)
+    unmap("2q")
     unmap(T.replayMacroKey)
 end
 
