@@ -18,6 +18,9 @@ local T = {
 }
 
 function T.startMacro()
+    if T.depth >= #T.registers  then
+        return ""
+    end
     T.depth = T.depth + 1
     local keys = 'q' .. T.registers[T.depth]
     if T.depth == 1 then
@@ -26,12 +29,10 @@ function T.startMacro()
         map("2q", T.startMacro)
         map(T.replayMacroKey, T.replayMacro)
     else
-        if T.depth < #T.registers then
-            if #T.macros < T.depth + 1 then
-                table.insert(T.macros, "")
-            else
-                T.macros[T.depth + 1] = ""
-            end
+        if #T.macros < T.depth + 1 then
+            table.insert(T.macros, "")
+        else
+            T.macros[T.depth + 1] = ""
         end
         vim.fn.feedkeys('q', 'nx')
         local macro = vim.fn.getreg(T.registers[T.depth - 1])
