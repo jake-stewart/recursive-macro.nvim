@@ -49,6 +49,9 @@ function T.startMacro()
 end
 
 function T.replayMacro()
+    if #T.macros < T.depth + 2 then
+        return ""
+    end
     vim.fn.feedkeys('q', 'nx')
     local macro = vim.fn.getreg(T.registers[T.depth])
     T.macros[T.depth + 1] = T.macros[T.depth + 1]
