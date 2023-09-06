@@ -40,9 +40,9 @@ function T.startMacro()
         vim.fn.feedkeys('q', 'nx')
         local macro = vim.fn.getreg(T.registers[T.depth])
 
-        if vim.fn.endswith(macro, "2q") then
+        if vim.endswith(macro, "2q") then
             macro = string.sub(macro, 1, #macro - 2)
-        elseif vim.fn.endswith(macro, "2") then
+        elseif vim.endswith(macro, "2") then
             macro = string.sub(macro, 1, #macro - 1)
         end
         T.macros[T.depth] = macro
