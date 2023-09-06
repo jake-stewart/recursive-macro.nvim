@@ -18,10 +18,6 @@ local T = {
 }
 
 function T.startMacro()
-    if vim.fn.exists("g:macro_keys") == 0 then
-        vim.cmd.echoerr("g:macro_keys is not set")
-        return
-    end
     local keys
     if T.depth < #T.registers then
         keys = 'q' .. T.registers[T.depth + 1]
