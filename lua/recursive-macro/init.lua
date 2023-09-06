@@ -1,5 +1,6 @@
-local function map(mapping, f)
-    vim.keymap.set({"n", "v"}, mapping, f, { expr = true })
+local function map(mapping, f, remap)
+    remap = remap or false
+    vim.keymap.set({"n", "v"}, mapping, f, { expr = true, remap = remap })
 end
 
 local function unmap(mapping)
@@ -79,7 +80,7 @@ function T.endMacro()
     if T.depth == 0 then
         vim.cmd.unmap(T.recurseMacroKey)
         map(T.startMacroKey, T.startMacro)
-        map(T.replayMacroKey, "@q")
+        map(T.replayMacroKey, "@" .. T.registers[1])
     else
         T.macros[T.depth] = T.macros[T.depth]
             .. "@" .. T.registers[T.depth + 1]
